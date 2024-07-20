@@ -10,12 +10,13 @@ import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.xrp.XRPGyro;
 import edu.wpi.first.wpilibj.xrp.XRPMotor;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.RavenEncoder;
+import frc.robot.Derivative;
 
 public class Drivetrain extends SubsystemBase {
   private static final double kGearRatio =
@@ -29,22 +30,24 @@ public class Drivetrain extends SubsystemBase {
   private final XRPMotor m_leftMotor = new XRPMotor(0);
   private final XRPMotor m_rightMotor = new XRPMotor(1);
 
+  private Timer timer = new Timer();
+
   // The XRP has onboard encoders that are hardcoded
   // to use DIO pins 4/5 and 6/7 for the left and right
   private final Encoder m_leftEncoder = new Encoder(4, 5);
   private final Encoder m_rightEncoder = new Encoder(6, 7);
-  private final RavenEncoder m_rightEncoderThing = new RavenEncoder(3);
-  private final RavenEncoder m_leftEncoderThing = new RavenEncoder(3);
-   private final RavenEncoder m_rightEncoderAccel = new RavenEncoder(3);
-  private final RavenEncoder m_leftEncoderAccel = new RavenEncoder(3);
-  private final RavenEncoder m_rightEncoderThing1 = new RavenEncoder(5);
-  private final RavenEncoder m_leftEncoderThing1 = new RavenEncoder(5);
-   private final RavenEncoder m_rightEncoderAccel1 = new RavenEncoder(5);
-  private final RavenEncoder m_leftEncoderAccel1 = new RavenEncoder(5);
-  private final RavenEncoder m_rightEncoderThing2 = new RavenEncoder(10);
-  private final RavenEncoder m_leftEncoderThing2 = new RavenEncoder(10);
-   private final RavenEncoder m_rightEncoderAccel2 = new RavenEncoder(10);
-  private final RavenEncoder m_leftEncoderAccel2 = new RavenEncoder(10);
+  private final Derivative m_rightEncoderVelocity = new Derivative(30);
+  private final Derivative m_leftEncoderVelocity = new Derivative(30);
+   private final Derivative m_rightEncoderAccel = new Derivative(30);
+  private final Derivative m_leftEncoderAccel = new Derivative(30);
+  private final Derivative m_rightEncoderVelocity1 = new Derivative(50);
+  private final Derivative m_leftEncoderVelocity1 = new Derivative(50);
+   private final Derivative m_rightEncoderAccel1 = new Derivative(50);
+  private final Derivative m_leftEncoderAccel1 = new Derivative(50);
+  private final Derivative m_rightEncoderVelocity2 = new Derivative(10);
+  private final Derivative m_leftEncoderVelocity2 = new Derivative(10);
+   private final Derivative m_rightEncoderAccel2 = new Derivative(10);
+  private final Derivative m_leftEncoderAccel2 = new Derivative(10);
 
   // Set up the differential drive controller
   private final DifferentialDrive m_diffDrive =
@@ -77,6 +80,7 @@ public class Drivetrain extends SubsystemBase {
     new Rotation2d(),
     m_leftEncoder.getDistance(), m_rightEncoder.getDistance(),
     new Pose2d(0, 0, new Rotation2d()));
+    timer.start();
   }
 
   public void arcadeDrive(double xaxisSpeed, double zaxisRotate) {
@@ -169,12 +173,13 @@ public class Drivetrain extends SubsystemBase {
 
   @Override
   public void periodic() {
-    m_rightEncoderThing.periodic(m_rightEncoder.getDistance());
-    m_leftEncoderThing.periodic(m_leftEncoder.getDistance());
-    m_rightEncoderThing1.periodic(m_rightEncoder.getDistance());
-    m_leftEncoderThing1.periodic(m_leftEncoder.getDistance());
-    m_rightEncoderThing2.periodic(m_rightEncoder.getDistance());
-    m_leftEncoderThing2.periodic(m_leftEncoder.getDistance());
+    System.out.println(timer.get());
+    m_rightEncoderVelocity.periodic(m_rightEncoder.getDistance());
+    m_leftEncoderVelocity.periodic(m_leftEncoder.getDistance());
+    m_rightEncoderVelocity1.periodic(m_rightEncoder.getDistance());
+    m_leftEncoderVelocity1.periodic(m_leftEncoder.getDistance());
+    m_rightEncoderVelocity2.periodic(m_rightEncoder.getDistance());
+    m_leftEncoderVelocity2.periodic(m_leftEncoder.getDistance());
     var gyroAngle = new Rotation2d(Math.toRadians(m_gyro.getAngleZ()));
     var m_pose = m_odometry.update(gyroAngle,
     m_leftEncoder.getDistance(),
@@ -196,10 +201,10 @@ public class Drivetrain extends SubsystemBase {
     SmartDashboard.putNumber("Position Right", right);
 
     double velocityLeft = SmartDashboard.getNumber("Velocity Left", 0);
-    velocityLeft = m_leftEncoderThing.getNetAcceleration();
+    velocityLeft = m_leftEncoderVelocity.getNetAcceleration();
     SmartDashboard.putNumber("Velocity Left", velocityLeft);
     double velocityRight = SmartDashboard.getNumber("Velocity Right", 0);
-    velocityRight = m_leftEncoderThing.getNetAcceleration();
+    velocityRight = m_rightEncoderVelocity.getNetAcceleration();
     SmartDashboard.putNumber("Velocity Right", velocityRight);
 
     m_leftEncoderAccel.periodic(velocityLeft);
@@ -216,10 +221,10 @@ public class Drivetrain extends SubsystemBase {
     // five cycles
 
     double velocityLeft1 = SmartDashboard.getNumber("Velocity Left 5", 0);
-    velocityLeft1 = m_leftEncoderThing1.getNetAcceleration();
+    velocityLeft1 = m_leftEncoderVelocity1.getNetAcceleration();
     SmartDashboard.putNumber("Velocity Left 5", velocityLeft1);
     double velocityRight1 = SmartDashboard.getNumber("Velocity Right 5", 0);
-    velocityRight1 = m_leftEncoderThing1.getNetAcceleration();
+    velocityRight1 = m_rightEncoderVelocity1.getNetAcceleration();
     SmartDashboard.putNumber("Velocity Right 5", velocityRight1);
 
     m_leftEncoderAccel1.periodic(velocityLeft1);
@@ -236,10 +241,10 @@ public class Drivetrain extends SubsystemBase {
     // ten cycles 
 
     double velocityLeft2 = SmartDashboard.getNumber("Velocity Left 10", 0);
-    velocityLeft2 = m_leftEncoderThing2.getNetAcceleration();
+    velocityLeft2 = m_leftEncoderVelocity2.getNetAcceleration();
     SmartDashboard.putNumber("Velocity Left 10", velocityLeft2);
     double velocityRight2 = SmartDashboard.getNumber("Velocity Right 10", 0);
-    velocityRight2 = m_leftEncoderThing2.getNetAcceleration();
+    velocityRight2 = m_rightEncoderVelocity2.getNetAcceleration();
     SmartDashboard.putNumber("Velocity Right 10", velocityRight2);
 
     m_leftEncoderAccel2.periodic(velocityLeft2);
