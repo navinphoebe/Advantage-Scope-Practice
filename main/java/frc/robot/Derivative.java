@@ -5,28 +5,28 @@
 package frc.robot;
 
 /** Add your docs here. */
-public class RavenEncoder {
+public class Derivative {
     private int clockCycles;
     private double[] rates;
     int currentIndex = 0;
+    int oldestIndex = 0;
     private double oldestRate = 0;
     private double currentRate = 0;
 
-    public RavenEncoder(int clockCycles){
+    public Derivative(int clockCycles){
         this.clockCycles = clockCycles;
 
         rates = new double[clockCycles];
     }
 
   public void periodic(double value) {
+    oldestRate = rates[currentIndex];
     rates[currentIndex] = value;
     currentRate = rates[currentIndex];
-
     currentIndex++;
     if (currentIndex >= clockCycles){
         currentIndex = 0;
     }
-
     oldestRate = rates[currentIndex];
   }
 
