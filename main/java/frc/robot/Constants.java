@@ -16,4 +16,6 @@ public final class Constants {
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
   }
+
+public static final double GO_TO_X_IS_FINISHED_ACCEPTABLE_DISTANCE_MARGIN = .5;
 }
