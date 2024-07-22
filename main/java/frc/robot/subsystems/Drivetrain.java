@@ -170,20 +170,50 @@ public class Drivetrain extends SubsystemBase {
     m_gyro.reset();
   }
 
-  @Override
-  public void periodic() {
+  private void updateEncoderPeriodics(){
     m_rightEncoderVelocity.periodic(m_rightEncoder.getDistance());
     m_leftEncoderVelocity.periodic(m_leftEncoder.getDistance());
     m_rightEncoderVelocity1.periodic(m_rightEncoder.getDistance());
     m_leftEncoderVelocity1.periodic(m_leftEncoder.getDistance());
     m_rightEncoderVelocity2.periodic(m_rightEncoder.getDistance());
     m_leftEncoderVelocity2.periodic(m_leftEncoder.getDistance());
+  }
+
+  public void updateEncoderDashboardValue(String string, Encoder encoder){
+    double num = SmartDashboard.getNumber(string, 0);
+    num =  encoder.getDistance();
+    SmartDashboard.putNumber(string, num);
+  }
+
+  private void updateEncoderAccelAndVelocity(String string, Derivative m_leftEncoderVelocity3,
+      Derivative m_rightEncoderVelocity3, Derivative m_leftEncoderAccel3, Derivative m_rightEncoderAccel3) {
+    double velocityLeft = SmartDashboard.getNumber("Velocity Left" + string, 0);
+    velocityLeft = m_leftEncoderVelocity3.getNetAcceleration();
+    SmartDashboard.putNumber("Velocity Left" + string, velocityLeft);
+    double velocityRight = SmartDashboard.getNumber("Velocity Right" + string, 0);
+    velocityRight = m_rightEncoderVelocity3.getNetAcceleration();
+    SmartDashboard.putNumber("Velocity Right" + string, velocityRight);
+
+    m_leftEncoderAccel3.periodic(velocityLeft);
+    m_rightEncoderAccel3.periodic(velocityRight);
+
+    double accelerationLeft = SmartDashboard.getNumber("Acceleration Left" + string, 0);
+    accelerationLeft = m_leftEncoderAccel3.getNetAcceleration();
+    SmartDashboard.putNumber("Acceleration Left" + string, accelerationLeft);
+
+    double accelerationRight = SmartDashboard.getNumber("Acceleration Right" + string, 0);
+    accelerationRight = m_rightEncoderAccel3.getNetAcceleration();
+    SmartDashboard.putNumber("Acceleration Right" + string, accelerationRight);
+  }
+
+  @Override
+  public void periodic() {
+    updateEncoderPeriodics();
     var gyroAngle = new Rotation2d(Math.toRadians(m_gyro.getAngleZ()));
     var m_pose = m_odometry.update(gyroAngle,
     m_leftEncoder.getDistance(),
     m_rightEncoder.getDistance());
 
-    // This method will be called once per scheduler run
     double x = SmartDashboard.getNumber("PositionX", 0);
     x =  m_pose.getX();
     SmartDashboard.putNumber("PositionX", x);
@@ -191,70 +221,16 @@ public class Drivetrain extends SubsystemBase {
     y = m_pose.getY();
     SmartDashboard.putNumber("PositionY", y);
 
-    double left = SmartDashboard.getNumber("Position Left", 0);
-    left =  m_leftEncoder.getDistance();
-    SmartDashboard.putNumber("Position Left", left);
-    double right = SmartDashboard.getNumber("Position Right", 0);
-    right = m_rightEncoder.getDistance();
-    SmartDashboard.putNumber("Position Right", right);
-
-    double velocityLeft = SmartDashboard.getNumber("Velocity Left", 0);
-    velocityLeft = m_leftEncoderVelocity.getNetAcceleration();
-    SmartDashboard.putNumber("Velocity Left", velocityLeft);
-    double velocityRight = SmartDashboard.getNumber("Velocity Right", 0);
-    velocityRight = m_rightEncoderVelocity.getNetAcceleration();
-    SmartDashboard.putNumber("Velocity Right", velocityRight);
-
-    m_leftEncoderAccel.periodic(velocityLeft);
-    m_rightEncoderAccel.periodic(velocityRight);
-
-    double accelerationLeft = SmartDashboard.getNumber("Acceleration Left", 0);
-    accelerationLeft = m_leftEncoderAccel.getNetAcceleration();
-    System.out.println(velocityLeft + ", " + accelerationLeft);
-    SmartDashboard.putNumber("Acceleration Left", accelerationLeft);
-
-    double accelerationRight = SmartDashboard.getNumber("Acceleration Right", 0);
-    accelerationRight = m_rightEncoderAccel.getNetAcceleration();
-    SmartDashboard.putNumber("Acceleration Right", accelerationRight);
-
-    // five cycles
-
-    double velocityLeft1 = SmartDashboard.getNumber("Velocity Left 5", 0);
-    velocityLeft1 = m_leftEncoderVelocity1.getNetAcceleration();
-    SmartDashboard.putNumber("Velocity Left 5", velocityLeft1);
-    double velocityRight1 = SmartDashboard.getNumber("Velocity Right 5", 0);
-    velocityRight1 = m_rightEncoderVelocity1.getNetAcceleration();
-    SmartDashboard.putNumber("Velocity Right 5", velocityRight1);
-
-    m_leftEncoderAccel1.periodic(velocityLeft1);
-    m_rightEncoderAccel1.periodic(velocityRight1);
-
-    double accelerationLeft1 = SmartDashboard.getNumber("Acceleration Left 5", 0);
-    accelerationLeft1 = m_leftEncoderAccel1.getNetAcceleration();
-    SmartDashboard.putNumber("Acceleration Left 5", accelerationLeft1);
-
-    double accelerationRight1 = SmartDashboard.getNumber("Acceleration Right 5", 0);
-    accelerationRight1 = m_rightEncoderAccel1.getNetAcceleration();
-    SmartDashboard.putNumber("Acceleration Right 5", accelerationRight1);
-
-    // ten cycles 
-
-    double velocityLeft2 = SmartDashboard.getNumber("Velocity Left 10", 0);
-    velocityLeft2 = m_leftEncoderVelocity2.getNetAcceleration();
-    SmartDashboard.putNumber("Velocity Left 10", velocityLeft2);
-    double velocityRight2 = SmartDashboard.getNumber("Velocity Right 10", 0);
-    velocityRight2 = m_rightEncoderVelocity2.getNetAcceleration();
-    SmartDashboard.putNumber("Velocity Right 10", velocityRight2);
-
-    m_leftEncoderAccel2.periodic(velocityLeft2);
-    m_rightEncoderAccel2.periodic(velocityRight2);
-
-    double accelerationLeft2 = SmartDashboard.getNumber("Acceleration Left 10", 0);
-    accelerationLeft2 = m_leftEncoderAccel2.getNetAcceleration();
-    SmartDashboard.putNumber("Acceleration Left 10", accelerationLeft2);
-
-    double accelerationRight2 = SmartDashboard.getNumber("Acceleration Right 10", 0);
-    accelerationRight2 = m_rightEncoderAccel2.getNetAcceleration();
-    SmartDashboard.putNumber("Acceleration Right 10", accelerationRight2);
-  }
+    updateEncoderDashboardValue("Position Left", m_leftEncoder);
+    updateEncoderDashboardValue("Position Right", m_rightEncoder);
+    
+    updateEncoderAccelAndVelocity("", m_leftEncoderVelocity, m_rightEncoderVelocity,
+     m_leftEncoderAccel, m_rightEncoderAccel);
+    
+    updateEncoderAccelAndVelocity("5", m_leftEncoderVelocity1, m_rightEncoderVelocity1,
+     m_leftEncoderAccel1, m_rightEncoderAccel1);
+    
+    updateEncoderAccelAndVelocity("10", m_leftEncoderVelocity2, m_rightEncoderVelocity2,
+     m_leftEncoderAccel2, m_rightEncoderAccel2);
+    }
 }

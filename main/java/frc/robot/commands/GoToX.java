@@ -44,7 +44,8 @@ public class GoToX extends Command {
     m_drivetrain.m_rightEncoder.getDistance());
     new TurnDegrees(.75, 90 - m_drivetrain.m_gyro.getAngleZ(), m_drivetrain); */
     System.out.println(m_drivetrain.m_gyro.getAngleZ());
-    if (!(m_drivetrain.m_gyro.getAngleZ() > 85 && m_drivetrain.m_gyro.getAngleZ() < 95) && !(m_drivetrain.m_gyro.getAngleZ() > 265 && m_drivetrain.m_gyro.getAngleZ() < 275)){
+    if (!(m_drivetrain.m_gyro.getAngleZ() > 85 && m_drivetrain.m_gyro.getAngleZ() < 95)
+     && !(m_drivetrain.m_gyro.getAngleZ() > 265 && m_drivetrain.m_gyro.getAngleZ() < 275)){
       m_drivetrain.arcadeDrive(.1, .5);
     } else {
       if (m_pose.getX() > m_distance){
