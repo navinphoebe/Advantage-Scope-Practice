@@ -52,7 +52,7 @@ public class GoToX extends Command {
 
     var chassisSpeeds = new ChassisSpeeds();
     if ((m_drivetrain.m_gyro.getAngleZ() > 85 && m_drivetrain.m_gyro.getAngleZ() < 95) == false && (m_drivetrain.m_gyro.getAngleZ() > 265 && m_drivetrain.m_gyro.getAngleZ() < 275) == false) {
-      chassisSpeeds = new ChassisSpeeds(0, 0, 5.0);
+      chassisSpeeds = new ChassisSpeeds(0, 0, 2);
     }
     else {
       // If statement for if the robot should move forward or backward
