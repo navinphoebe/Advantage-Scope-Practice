@@ -17,26 +17,27 @@ public class AutonomousTime extends SequentialCommandGroup {
    */
   public AutonomousTime(Drivetrain drivetrain) {
     addCommands(
-        new DriveTime(.1, 1.0, drivetrain),
-        new DriveTime(.2, 1.0, drivetrain),
-        new DriveTime(.3, 1.0, drivetrain),
-        new DriveTime(.4, 1.0, drivetrain),
-        new DriveTime(.5, 1.0, drivetrain),
-        new DriveTime(.6, 1.0, drivetrain),
-        new DriveTime(.7, 1.0, drivetrain),
-        new DriveTime(.8, 1.0, drivetrain),
-        new DriveTime(.9, 1.0, drivetrain),
-        new DriveTime(1.0, 1.0, drivetrain),
-        new DriveTime(-1.0, 1.0, drivetrain),
-        new DriveTime(-0.9, 1.0, drivetrain),
-        new DriveTime(-0.8, 1.0, drivetrain),
-        new DriveTime(-0.7, 1.0, drivetrain),
-        new DriveTime(-0.6, 1.0, drivetrain),
-        new DriveTime(-0.5, 1.0, drivetrain),
-        new DriveTime(-0.4, 1.0, drivetrain),
-        new DriveTime(-0.3, 1.0, drivetrain),
-        new DriveTime(-0.2, 1.0, drivetrain),
-        new DriveTime(-0.1, 1.0, drivetrain));
+        /* new DriveTime(.1, .5, drivetrain),
+        new DriveTime(.2, .5, drivetrain),
+        new DriveTime(.3, .5, drivetrain),
+        new DriveTime(.4, .5, drivetrain),
+        new DriveTime(.5, .5, drivetrain),
+        new DriveTime(.6, .5, drivetrain),
+        new DriveTime(.7, .5, drivetrain),
+        new DriveTime(.8, .5, drivetrain),
+        new DriveTime(.9, .5, drivetrain),
+        new DriveTime(1, .5, drivetrain),
+        new DriveTime(-1, .5, drivetrain),
+        new DriveTime(-0.9, .5, drivetrain),
+        new DriveTime(-0.8, .5, drivetrain),
+        new DriveTime(-0.7, .5, drivetrain),
+        new DriveTime(-0.6, .5, drivetrain),
+        new DriveTime(-0.5, .5, drivetrain),
+        new DriveTime(-0.4, .5, drivetrain),
+        new DriveTime(-0.3, .5, drivetrain),
+        new DriveTime(-0.2, .5, drivetrain),
+        new DriveTime(-0.1, .5, drivetrain)*/
+        new GoToX(drivetrain, 10));
 
   }
 }

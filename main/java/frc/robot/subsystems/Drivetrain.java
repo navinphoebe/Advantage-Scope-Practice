@@ -10,7 +10,6 @@ import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.xrp.XRPGyro;
@@ -30,20 +29,19 @@ public class Drivetrain extends SubsystemBase {
   private final XRPMotor m_leftMotor = new XRPMotor(0);
   private final XRPMotor m_rightMotor = new XRPMotor(1);
 
-  private Timer timer = new Timer();
 
   // The XRP has onboard encoders that are hardcoded
   // to use DIO pins 4/5 and 6/7 for the left and right
-  private final Encoder m_leftEncoder = new Encoder(4, 5);
-  private final Encoder m_rightEncoder = new Encoder(6, 7);
-  private final Derivative m_rightEncoderVelocity = new Derivative(30);
-  private final Derivative m_leftEncoderVelocity = new Derivative(30);
-   private final Derivative m_rightEncoderAccel = new Derivative(30);
-  private final Derivative m_leftEncoderAccel = new Derivative(30);
-  private final Derivative m_rightEncoderVelocity1 = new Derivative(50);
-  private final Derivative m_leftEncoderVelocity1 = new Derivative(50);
-   private final Derivative m_rightEncoderAccel1 = new Derivative(50);
-  private final Derivative m_leftEncoderAccel1 = new Derivative(50);
+  public final Encoder m_leftEncoder = new Encoder(4, 5);
+  public final Encoder m_rightEncoder = new Encoder(6, 7);
+  private final Derivative m_rightEncoderVelocity = new Derivative(3);
+  private final Derivative m_leftEncoderVelocity = new Derivative(3);
+   private final Derivative m_rightEncoderAccel = new Derivative(3);
+  private final Derivative m_leftEncoderAccel = new Derivative(3);
+  private final Derivative m_rightEncoderVelocity1 = new Derivative(5);
+  private final Derivative m_leftEncoderVelocity1 = new Derivative(5);
+   private final Derivative m_rightEncoderAccel1 = new Derivative(5);
+  private final Derivative m_leftEncoderAccel1 = new Derivative(5);
   private final Derivative m_rightEncoderVelocity2 = new Derivative(10);
   private final Derivative m_leftEncoderVelocity2 = new Derivative(10);
    private final Derivative m_rightEncoderAccel2 = new Derivative(10);
@@ -54,7 +52,7 @@ public class Drivetrain extends SubsystemBase {
       new DifferentialDrive(m_leftMotor::set, m_rightMotor::set);
 
   // Set up the XRPGyro
-  private final XRPGyro m_gyro = new XRPGyro();
+  public final XRPGyro m_gyro = new XRPGyro();
 
   private final DifferentialDriveOdometry m_odometry;
 
@@ -73,14 +71,14 @@ public class Drivetrain extends SubsystemBase {
 
     // Use inches as unit for encoder distances
     m_leftEncoder.setDistancePerPulse((Math.PI * kWheelDiameterInch) / kCountsPerRevolution);
-    m_rightEncoder.setDistancePerPulse((Math.PI * kWheelDiameterInch) / kCountsPerRevolution);
+    // Uses (I think) encoder ticks
+    m_rightEncoder.setDistancePerPulse(1);
     resetEncoders();
 
    m_odometry = new DifferentialDriveOdometry(
     new Rotation2d(),
     m_leftEncoder.getDistance(), m_rightEncoder.getDistance(),
     new Pose2d(0, 0, new Rotation2d()));
-    timer.start();
   }
 
   public void arcadeDrive(double xaxisSpeed, double zaxisRotate) {
@@ -173,7 +171,6 @@ public class Drivetrain extends SubsystemBase {
 
   @Override
   public void periodic() {
-    System.out.println(timer.get());
     m_rightEncoderVelocity.periodic(m_rightEncoder.getDistance());
     m_leftEncoderVelocity.periodic(m_leftEncoder.getDistance());
     m_rightEncoderVelocity1.periodic(m_rightEncoder.getDistance());
@@ -212,6 +209,7 @@ public class Drivetrain extends SubsystemBase {
 
     double accelerationLeft = SmartDashboard.getNumber("Acceleration Left", 0);
     accelerationLeft = m_leftEncoderAccel.getNetAcceleration();
+    System.out.println(velocityLeft + ", " + accelerationLeft);
     SmartDashboard.putNumber("Acceleration Left", accelerationLeft);
 
     double accelerationRight = SmartDashboard.getNumber("Acceleration Right", 0);

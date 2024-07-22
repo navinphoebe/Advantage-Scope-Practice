@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.Timer;
+
 /** Add your docs here. */
 public class Derivative {
     private int clockCycles;
@@ -12,11 +14,14 @@ public class Derivative {
     int oldestIndex = 0;
     private double oldestRate = 0;
     private double currentRate = 0;
+    private Timer timer = new Timer();
+    private double time = 0;
 
     public Derivative(int clockCycles){
         this.clockCycles = clockCycles;
 
         rates = new double[clockCycles];
+        timer.start();
     }
 
   public void periodic(double value) {
@@ -26,6 +31,8 @@ public class Derivative {
     currentIndex++;
     if (currentIndex >= clockCycles){
         currentIndex = 0;
+      time = timer.get();
+      timer.reset();
     }
     oldestRate = rates[currentIndex];
   }
@@ -36,7 +43,7 @@ public class Derivative {
   }
 
   public double getNetAcceleration(){
-    return getChangeInRate()/clockCycles;
+    return getChangeInRate() / time;
   }
   
 }
