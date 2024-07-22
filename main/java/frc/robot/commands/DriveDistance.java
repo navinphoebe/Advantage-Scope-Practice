@@ -38,7 +38,6 @@ public class DriveDistance extends Command {
   @Override
   public void execute() {
     m_drive.arcadeDrive(m_speed, 0);
-    System.out.println("turnnnn");
   }
 
   // Called once the command ends or is interrupted.

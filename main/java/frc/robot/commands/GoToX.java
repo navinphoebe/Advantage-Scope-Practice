@@ -6,7 +6,11 @@ package frc.robot.commands;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
+import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Drivetrain;
 
@@ -16,11 +20,14 @@ public class GoToX extends Command {
   private double m_distance;
   private DifferentialDriveOdometry m_odometry;
   public Pose2d m_pose = new Pose2d();
+  private DifferentialDriveKinematics m_kinematics;
 
   public GoToX(Drivetrain drivetrain, double distance) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_distance = distance;
     m_drivetrain = drivetrain;
+    m_kinematics =
+    new DifferentialDriveKinematics(Units.inchesToMeters(6.0));
     m_odometry = new DifferentialDriveOdometry(
     new Rotation2d(),
     m_drivetrain.m_leftEncoder.getDistance(), m_drivetrain.m_rightEncoder.getDistance(),
@@ -38,22 +45,26 @@ public class GoToX extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    /* var gyroAngle = new Rotation2d(Math.toRadians(m_drivetrain.m_gyro.getAngleZ()));
+    // System.out.println("running");
+    var gyroAngle = new Rotation2d(Math.toRadians(m_drivetrain.m_gyro.getAngleZ()));
     m_pose = m_odometry.update(gyroAngle,
     m_drivetrain.m_leftEncoder.getDistance(),
     m_drivetrain.m_rightEncoder.getDistance());
-    new TurnDegrees(.75, 90 - m_drivetrain.m_gyro.getAngleZ(), m_drivetrain); */
-    System.out.println(m_drivetrain.m_gyro.getAngleZ());
+
+    var chassisSpeeds = new ChassisSpeeds();
     if (!(m_drivetrain.m_gyro.getAngleZ() > 85 && m_drivetrain.m_gyro.getAngleZ() < 95)
      && !(m_drivetrain.m_gyro.getAngleZ() > 265 && m_drivetrain.m_gyro.getAngleZ() < 275)){
-      m_drivetrain.arcadeDrive(.1, .5);
+      chassisSpeeds = new ChassisSpeeds(0, 0, 5.0);
+      // System.out.println(m_drivetrain.m_gyro.getAngleZ());
     } else {
       if (m_pose.getX() > m_distance){
-        m_drivetrain.arcadeDrive(-.75, 0);
+        chassisSpeeds = new ChassisSpeeds(-10, 0, 0);
       } else {
-        m_drivetrain.arcadeDrive(.75, 0);
+        chassisSpeeds = new ChassisSpeeds(1, 0, 0);
       }
     }
+    DifferentialDriveWheelSpeeds wheelSpeeds = m_kinematics.toWheelSpeeds(chassisSpeeds);
+    m_drivetrain.tankDrive(wheelSpeeds.leftMetersPerSecond, wheelSpeeds.rightMetersPerSecond);
   }
 
   // Called once the command ends or is interrupted.

@@ -82,8 +82,15 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public void arcadeDrive(double xaxisSpeed, double zaxisRotate) {
-    System.out.println("accessed place");
     m_diffDrive.arcadeDrive(xaxisSpeed, zaxisRotate);
+  }
+
+  public void tankDrive(double leftSpeed, double rightSpeed){
+    System.out.println("tank");
+    System.out.println(leftSpeed);
+    System.out.println(rightSpeed);
+    m_leftMotor.set(leftSpeed);
+    m_rightMotor.set(rightSpeed);
   }
 
   public void resetEncoders() {
