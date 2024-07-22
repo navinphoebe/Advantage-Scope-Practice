@@ -38,12 +38,21 @@ public class GoToX extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    var gyroAngle = new Rotation2d(Math.toRadians(m_drivetrain.m_gyro.getAngleZ()));
+    /* var gyroAngle = new Rotation2d(Math.toRadians(m_drivetrain.m_gyro.getAngleZ()));
     m_pose = m_odometry.update(gyroAngle,
     m_drivetrain.m_leftEncoder.getDistance(),
     m_drivetrain.m_rightEncoder.getDistance());
-    new TurnDegrees(.75, -m_drivetrain.m_gyro.getAngleZ(), m_drivetrain);
-    new DriveDistance(.75, 10 - m_pose.getX(), m_drivetrain);
+    new TurnDegrees(.75, 90 - m_drivetrain.m_gyro.getAngleZ(), m_drivetrain); */
+    System.out.println(m_drivetrain.m_gyro.getAngleZ());
+    if (!(m_drivetrain.m_gyro.getAngleZ() > 85 && m_drivetrain.m_gyro.getAngleZ() < 95) && !(m_drivetrain.m_gyro.getAngleZ() > 265 && m_drivetrain.m_gyro.getAngleZ() < 275)){
+      m_drivetrain.arcadeDrive(.1, .5);
+    } else {
+      if (m_pose.getX() > m_distance){
+        m_drivetrain.arcadeDrive(-.75, 0);
+      } else {
+        m_drivetrain.arcadeDrive(.75, 0);
+      }
+    }
   }
 
   // Called once the command ends or is interrupted.
@@ -53,6 +62,6 @@ public class GoToX extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return m_pose.getX() == m_distance;
+    return Math.floor(m_pose.getX()) == m_distance;
   }
 }

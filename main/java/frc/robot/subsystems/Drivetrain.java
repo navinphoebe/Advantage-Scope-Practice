@@ -72,7 +72,7 @@ public class Drivetrain extends SubsystemBase {
     // Use inches as unit for encoder distances
     m_leftEncoder.setDistancePerPulse((Math.PI * kWheelDiameterInch) / kCountsPerRevolution);
     // Uses (I think) encoder ticks
-    m_rightEncoder.setDistancePerPulse(1);
+    m_rightEncoder.setDistancePerPulse((Math.PI * kWheelDiameterInch) / kCountsPerRevolution);
     resetEncoders();
 
    m_odometry = new DifferentialDriveOdometry(
@@ -82,6 +82,7 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public void arcadeDrive(double xaxisSpeed, double zaxisRotate) {
+    System.out.println("accessed place");
     m_diffDrive.arcadeDrive(xaxisSpeed, zaxisRotate);
   }
 
